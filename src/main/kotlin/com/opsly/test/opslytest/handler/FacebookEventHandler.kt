@@ -15,5 +15,6 @@ class FacebookEventHandler(@Value("\${social-networks.facebook}") var facebookUr
                 .uri(facebookUrl)
                 .retrieve()
                 .bodyToFlux(FacebookEvent::class.java)
+                .onErrorReturn(FacebookEvent())
     }
 }

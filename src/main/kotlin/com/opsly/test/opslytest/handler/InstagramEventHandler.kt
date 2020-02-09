@@ -15,5 +15,6 @@ class InstagramEventHandler(@Value("\${social-networks.instagram}") var instagra
                 .uri(instagramUrl)
                 .retrieve()
                 .bodyToFlux(InstagramEvent::class.java)
+                .onErrorReturn(InstagramEvent())
     }
 }

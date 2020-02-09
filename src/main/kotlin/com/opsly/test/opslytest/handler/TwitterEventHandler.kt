@@ -15,5 +15,6 @@ class TwitterEventHandler(@Value("\${social-networks.twitter}") var twitterUrl: 
                 .uri(twitterUrl)
                 .retrieve()
                 .bodyToFlux(TwitterEvent::class.java)
+                .onErrorReturn(TwitterEvent())
     }
 }

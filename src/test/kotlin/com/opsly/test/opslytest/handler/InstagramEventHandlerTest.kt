@@ -68,15 +68,13 @@ class InstagramEventHandlerTest  : StringSpec() {
             result?.firstOrNull()?.picture shouldNotBe null
         }
 
-        "it should return error with invalid instagram json" {
+        "given an http error it should return an empty object" {
             val body = "I am trapped in a social media factory send help"
             mockServer.enqueue(createMockedResponse(500,body))
 
-            val thrown: Exception = shouldThrow {
-                instagramEventHandler.findInstagramEvents().collectList().block()
-            }
+            val result = instagramEventHandler.findInstagramEvents().collectList().block()
 
-            thrown.message shouldContain  "500 Internal Server Error from GET"
+            result?.shouldHaveSize(1)
         }
     }
     private fun instagramBody(): String {

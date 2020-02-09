@@ -4,9 +4,7 @@ import com.opsly.test.opslytest.ResponseMocker.createMockedResponse
 import io.kotlintest.Spec
 import io.kotlintest.TestCase
 import io.kotlintest.matchers.collections.shouldHaveSize
-import io.kotlintest.matchers.string.shouldContain
 import io.kotlintest.shouldNotBe
-import io.kotlintest.shouldThrow
 import io.kotlintest.specs.StringSpec
 import io.kotlintest.spring.SpringListener
 import okhttp3.mockwebserver.MockWebServer
@@ -67,15 +65,13 @@ class TwitterEventHandlerTest : StringSpec() {
             result?.firstOrNull()?.tweet shouldNotBe null
         }
 
-        "it should return error with invalid twitter json" {
+        "given an http error it should return an empty object" {
             val body = "I am trapped in a social media factory send help"
             mockServer.enqueue(createMockedResponse(500,body))
 
-            val thrown: Exception = shouldThrow {
-                twitterEventHandler.findTwitterEvents().collectList().block()
-            }
+            val result = twitterEventHandler.findTwitterEvents().collectList().block()
 
-            thrown.message shouldContain  "500 Internal Server Error from GET"
+            result?.shouldHaveSize(1)
         }
     }
 
