@@ -4,7 +4,6 @@ import com.opsly.test.opslytest.handler.SocialNetworkHandler
 import com.opsly.test.opslytest.model.SocialEventsResult
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.router
 

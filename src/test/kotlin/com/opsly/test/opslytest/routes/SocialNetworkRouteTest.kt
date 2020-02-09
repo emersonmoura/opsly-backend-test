@@ -17,13 +17,13 @@ class SocialNetworkRouteTest : StringSpec() {
 
     init {
         "it should return a valid json with its values"{
-            val expected = Mono.just(SocialEventsResult(listOf("tweet1"), listOf("statuses"), listOf("photos")))
+            val expected = Mono.just(SocialEventsResult(listOf("tweets"), listOf("statuses"), listOf("photos")))
             val client = WebTestClient.bindToRouterFunction(SocialNetworkRoute(createMock(expected)).route()).build()
             client.get()
                     .uri("/")
                     .exchange()
                     .expectBody()
-                    .json("{\"twitter\":[\"tweet1\"],\"facebook\":[\"statuses\"],\"instagram\":[\"photos\"]}")
+                    .json("{\"twitter\":[\"tweets\"],\"facebook\":[\"statuses\"],\"instagram\":[\"photos\"]}")
         }
     }
 

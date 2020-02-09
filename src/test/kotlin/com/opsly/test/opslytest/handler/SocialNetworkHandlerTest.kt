@@ -6,6 +6,7 @@ import com.opsly.test.opslytest.model.FacebookEvent
 import com.opsly.test.opslytest.model.InstagramEvent
 import com.opsly.test.opslytest.model.TwitterEvent
 import io.kotlintest.matchers.collections.shouldHaveSize
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import io.kotlintest.spring.SpringListener
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,6 +31,14 @@ class SocialNetworkHandlerTest : StringSpec() {
             result?.twitter?.shouldHaveSize(1)
         }
 
+        "given a twitter body with items should map its value" {
+            configureMocks(Flux.just(), Flux.just(),Flux.just(TwitterEvent("name", "tweet")))
+
+            val result = socialNetworkHandler.findEvents().block()
+
+            result?.twitter?.firstOrNull() shouldBe  "tweet"
+        }
+
         "given a facebook body with items should compute each one" {
             configureMocks(Flux.just(FacebookEvent("name", "status")), Flux.just(), Flux.just())
 
@@ -38,12 +47,28 @@ class SocialNetworkHandlerTest : StringSpec() {
             result?.facebook?.shouldHaveSize(1)
         }
 
+        "given a facebook body with items should map its value" {
+            configureMocks(Flux.just(FacebookEvent("name", "status")), Flux.just(), Flux.just())
+
+            val result = socialNetworkHandler.findEvents().block()
+
+            result?.facebook?.firstOrNull() shouldBe "status"
+        }
+
         "given a instagram body with items should compute each one" {
             configureMocks(Flux.just(), Flux.just(InstagramEvent("name", "picture")), Flux.just())
 
             val result = socialNetworkHandler.findEvents().block()
 
             result?.instagram?.shouldHaveSize(1)
+        }
+
+        "given a instagram body with items should map its value" {
+            configureMocks(Flux.just(), Flux.just(InstagramEvent("name", "picture")), Flux.just())
+
+            val result = socialNetworkHandler.findEvents().block()
+
+            result?.instagram?.firstOrNull() shouldBe "picture"
         }
     }
 
