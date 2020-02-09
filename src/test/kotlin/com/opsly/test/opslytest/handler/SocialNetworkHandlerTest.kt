@@ -68,7 +68,7 @@ class SocialNetworkHandlerTest : StringSpec() {
             result?.firstOrNull()?.tweet shouldNotBe null
         }
 
-        "it should return error with invalid json" {
+        "it should return error with invalid twitter json" {
             val body = "I am trapped in a social media factory send help"
             mockServer.enqueue(createMockedResponse(500,body))
 
@@ -105,7 +105,7 @@ class SocialNetworkHandlerTest : StringSpec() {
             result?.firstOrNull()?.status shouldNotBe null
         }
 
-        "it should return error with invalid json" {
+        "it should return error with invalid facebook json" {
             val body = "I am trapped in a social media factory send help"
             mockServer.enqueue(createMockedResponse(500,body))
 
@@ -115,25 +115,48 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             thrown.message shouldContain  "500 Internal Server Error from GET"
         }
+
+        //INSTAGRAM EVENTS
+
+        "given a instagram json body with items should compute each one" {
+            mockServer.enqueue(createMockedResponse(200, instagramBody()))
+
+            val result = socialNetworkHandler.findInstagramEvents(baseUrl).collectList().block()
+
+            result?.shouldHaveSize(4)
+        }
+
+        "given a instagram json item with username should compute the value" {
+            mockServer.enqueue(createMockedResponse(200, instagramBody()))
+
+            val result = socialNetworkHandler.findInstagramEvents(baseUrl).collectList().block()
+
+            result?.firstOrNull()?.username shouldNotBe null
+        }
+
+        "given a instagram json item with picture should compute the value" {
+            mockServer.enqueue(createMockedResponse(200, instagramBody()))
+
+            val result = socialNetworkHandler.findInstagramEvents(baseUrl).collectList().block()
+
+            result?.firstOrNull()?.picture shouldNotBe null
+        }
+
+        "it should return error with invalid instagram json" {
+            val body = "I am trapped in a social media factory send help"
+            mockServer.enqueue(createMockedResponse(500,body))
+
+            val thrown: Exception = shouldThrow {
+                socialNetworkHandler.findInstagramEvents(baseUrl).collectList().block()
+            }
+
+            thrown.message shouldContain  "500 Internal Server Error from GET"
+        }
     }
 
     private fun twitterBody(): String {
         return """
-                    [
-                      {
-                        "name": "Some Friend",
-                        "status": "Here's some photos of my holiday. Look how much more fun I'm having than you are!"
-                      },
-                      {
-                        "name": "Drama Pig",
-                        "status": "I am in a hospital. I will not tell you anything about why I am here."
-                      }
-                    ]
-                """.trimIndent()
-    }
-
-    private fun facebookBody(): String {
-        return """
+            [
               {
                 "name": "Some Friend",
                 "status": "Here's some photos of my holiday. Look how much more fun I'm having than you are!"
@@ -142,6 +165,46 @@ class SocialNetworkHandlerTest : StringSpec() {
                 "name": "Drama Pig",
                 "status": "I am in a hospital. I will not tell you anything about why I am here."
               }
+            ]""".trimIndent()
+    }
+
+    private fun facebookBody(): String {
+        return """
+            [
+              {
+                "name": "Some Friend",
+                "status": "Here's some photos of my holiday. Look how much more fun I'm having than you are!"
+              },
+              {
+                "name": "Drama Pig",
+                "status": "I am in a hospital. I will not tell you anything about why I am here."
+              }
+            ]""".trimIndent()
+    }
+
+    private fun instagramBody(): String {
+        return """
+              [
+                  {
+                    "username": "hipster1",
+                    "picture": "food"
+                  },
+                  {
+                    "username": "hipster2",
+                    "picture": "coffee"
+                  },
+                  {
+                    "username": "hipster3",
+                    "picture": "coffee"
+                  },
+                  {
+                    "username": "hipster4",
+                    "picture": "food"
+                  },
+                  {
+                    "username": "hipster5",
+                    "picture": "this one is of a cat"
+                  }
             ]""".trimIndent()
     }
 
