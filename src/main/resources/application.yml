@@ -1,2 +1,6 @@
 server:
   port: 3000
+social-networks:
+  twitter: 'https://takehome.io/twitter'
+  facebook: 'https://takehome.io/facebook'
+  instagram: 'https://takehome.io/instagram'
