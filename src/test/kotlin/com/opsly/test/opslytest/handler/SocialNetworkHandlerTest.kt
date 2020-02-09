@@ -1,6 +1,7 @@
 package com.opsly.test.opslytest.handler
 
 import io.kotlintest.Spec
+import io.kotlintest.TestCase
 import io.kotlintest.matchers.collections.shouldHaveSize
 import io.kotlintest.matchers.string.shouldContain
 import io.kotlintest.shouldNotBe
@@ -27,12 +28,17 @@ class SocialNetworkHandlerTest : StringSpec() {
 
     val mockServer = MockWebServer()
 
-    var baseUrl = ""
-
     override fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
         mockServer.start()
-        baseUrl = String.format(MAIN_URL, mockServer.port)
+    }
+
+    override fun beforeTest(testCase: TestCase) {
+        super.beforeTest(testCase)
+        val baseUrl = String.format(MAIN_URL, mockServer.port)
+        socialNetworkHandler.facebookUrl = baseUrl
+        socialNetworkHandler.twitterUrl = baseUrl
+        socialNetworkHandler.instagramUrl = baseUrl
     }
 
     override fun afterSpec(spec: Spec) {
@@ -47,7 +53,7 @@ class SocialNetworkHandlerTest : StringSpec() {
         "given a twitter json body with items should compute each one" {
             mockServer.enqueue(createMockedResponse(200, twitterBody()))
 
-            val result = socialNetworkHandler.findTwitterEvents(baseUrl).collectList().block()
+            val result = socialNetworkHandler.findTwitterEvents().collectList().block()
 
             result?.shouldHaveSize(2)
         }
@@ -55,7 +61,7 @@ class SocialNetworkHandlerTest : StringSpec() {
         "given a twitter json item with username should compute the value" {
             mockServer.enqueue(createMockedResponse(200, twitterBody()))
 
-            val result = socialNetworkHandler.findTwitterEvents(baseUrl).collectList().block()
+            val result = socialNetworkHandler.findTwitterEvents().collectList().block()
 
             result?.firstOrNull()?.username shouldNotBe null
         }
@@ -63,7 +69,7 @@ class SocialNetworkHandlerTest : StringSpec() {
         "given a twitter json item with tweet should compute the value" {
             mockServer.enqueue(createMockedResponse(200, twitterBody()))
 
-            val result = socialNetworkHandler.findTwitterEvents(baseUrl).collectList().block()
+            val result = socialNetworkHandler.findTwitterEvents().collectList().block()
 
             result?.firstOrNull()?.tweet shouldNotBe null
         }
@@ -73,7 +79,7 @@ class SocialNetworkHandlerTest : StringSpec() {
             mockServer.enqueue(createMockedResponse(500,body))
 
             val thrown: Exception = shouldThrow {
-                socialNetworkHandler.findTwitterEvents(baseUrl).collectList().block()
+                socialNetworkHandler.findTwitterEvents().collectList().block()
             }
 
             thrown.message shouldContain  "500 Internal Server Error from GET"
@@ -84,7 +90,7 @@ class SocialNetworkHandlerTest : StringSpec() {
         "given a facebook json body with items should compute each one" {
             mockServer.enqueue(createMockedResponse(200, facebookBody()))
 
-            val result = socialNetworkHandler.findFacebookEvents(baseUrl).collectList().block()
+            val result = socialNetworkHandler.findFacebookEvents().collectList().block()
 
             result?.shouldHaveSize(2)
         }
@@ -92,7 +98,7 @@ class SocialNetworkHandlerTest : StringSpec() {
         "given a facebook json item with name should compute the value" {
             mockServer.enqueue(createMockedResponse(200, facebookBody()))
 
-            val result = socialNetworkHandler.findFacebookEvents(baseUrl).collectList().block()
+            val result = socialNetworkHandler.findFacebookEvents().collectList().block()
 
             result?.firstOrNull()?.name shouldNotBe null
         }
@@ -100,7 +106,7 @@ class SocialNetworkHandlerTest : StringSpec() {
         "given a facebook json item with status should compute the value" {
             mockServer.enqueue(createMockedResponse(200, facebookBody()))
 
-            val result = socialNetworkHandler.findFacebookEvents(baseUrl).collectList().block()
+            val result = socialNetworkHandler.findFacebookEvents().collectList().block()
 
             result?.firstOrNull()?.status shouldNotBe null
         }
@@ -110,7 +116,7 @@ class SocialNetworkHandlerTest : StringSpec() {
             mockServer.enqueue(createMockedResponse(500,body))
 
             val thrown: Exception = shouldThrow {
-                socialNetworkHandler.findFacebookEvents(baseUrl).collectList().block()
+                socialNetworkHandler.findFacebookEvents().collectList().block()
             }
 
             thrown.message shouldContain  "500 Internal Server Error from GET"
@@ -121,7 +127,7 @@ class SocialNetworkHandlerTest : StringSpec() {
         "given a instagram json body with items should compute each one" {
             mockServer.enqueue(createMockedResponse(200, instagramBody()))
 
-            val result = socialNetworkHandler.findInstagramEvents(baseUrl).collectList().block()
+            val result = socialNetworkHandler.findInstagramEvents().collectList().block()
 
             result?.shouldHaveSize(5)
         }
@@ -129,7 +135,7 @@ class SocialNetworkHandlerTest : StringSpec() {
         "given a instagram json item with username should compute the value" {
             mockServer.enqueue(createMockedResponse(200, instagramBody()))
 
-            val result = socialNetworkHandler.findInstagramEvents(baseUrl).collectList().block()
+            val result = socialNetworkHandler.findInstagramEvents().collectList().block()
 
             result?.firstOrNull()?.username shouldNotBe null
         }
@@ -137,7 +143,7 @@ class SocialNetworkHandlerTest : StringSpec() {
         "given a instagram json item with picture should compute the value" {
             mockServer.enqueue(createMockedResponse(200, instagramBody()))
 
-            val result = socialNetworkHandler.findInstagramEvents(baseUrl).collectList().block()
+            val result = socialNetworkHandler.findInstagramEvents().collectList().block()
 
             result?.firstOrNull()?.picture shouldNotBe null
         }
@@ -147,7 +153,7 @@ class SocialNetworkHandlerTest : StringSpec() {
             mockServer.enqueue(createMockedResponse(500,body))
 
             val thrown: Exception = shouldThrow {
-                socialNetworkHandler.findInstagramEvents(baseUrl).collectList().block()
+                socialNetworkHandler.findInstagramEvents().collectList().block()
             }
 
             thrown.message shouldContain  "500 Internal Server Error from GET"
