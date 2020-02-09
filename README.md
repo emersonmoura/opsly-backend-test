@@ -1,3 +1,10 @@
+# To run it, execute the commands
+
+```
+./gradlew clean build bootrun
+curl localhost:3000
+```
+
 ## Your mission:
 
 A client needs to know what is happening on the social networks. All of them. Right now.
