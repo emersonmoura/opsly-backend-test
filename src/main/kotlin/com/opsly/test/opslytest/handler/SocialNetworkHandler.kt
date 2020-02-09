@@ -15,9 +15,9 @@ class SocialNetworkHandler(var twitterEventHandler: TwitterEventHandler,
         val instagram = instagramEventHandler.findInstagramEvents().collectList()
         return Mono.zip(twitter,facebook,instagram).map { values ->
             SocialEventsResult(
-                    values.t1.map { it.tweet },
-                    values.t2.map { it.status },
-                    values.t3.map { it.picture }
+                    values.t1.filter { it.hasTweet() }.map { it.tweet },
+                    values.t2.filter { it.hasStatus() }.map { it.status },
+                    values.t3.filter { it.hasPicture() }.map { it.picture }
             )
         }
     }

@@ -70,6 +70,14 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             result?.instagram?.firstOrNull() shouldBe "picture"
         }
+
+        "empty results should not be considered" {
+            configureMocks(Flux.just(FacebookEvent()), Flux.just(InstagramEvent()), Flux.just(TwitterEvent()))
+
+            val result = socialNetworkHandler.findEvents().block()
+
+            result?.facebook?.shouldHaveSize(0)
+        }
     }
 
     private fun configureMocks(facebookEvents: Flux<FacebookEvent>, instagramEvents: Flux<InstagramEvent>, twitterEvents: Flux<TwitterEvent>) {
