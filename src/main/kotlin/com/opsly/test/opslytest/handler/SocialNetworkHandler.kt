@@ -1,5 +1,6 @@
 package com.opsly.test.opslytest.handler
 
+import com.opsly.test.opslytest.model.FacebookEvent
 import com.opsly.test.opslytest.model.SocialEventsResult
 import com.opsly.test.opslytest.model.TwitterEvent
 import org.springframework.stereotype.Component
@@ -14,5 +15,9 @@ class SocialNetworkHandler {
 
     fun findTwitterEvents(baseUrl: String): Flux<TwitterEvent> {
         return Flux.just(TwitterEvent())
+    }
+
+    fun findFacebookEvents(baseUrl: String): Flux<FacebookEvent> {
+        return Flux.just(FacebookEvent())
     }
 }

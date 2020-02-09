@@ -41,6 +41,9 @@ class SocialNetworkHandlerTest : StringSpec() {
     }
 
     init {
+
+        //TWITTER EVENTS
+
         "given a twitter json body with items should compute each one" {
             mockServer.enqueue(createMockedResponse(200, twitterBody()))
 
@@ -75,6 +78,43 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             thrown.message shouldContain  "500 Internal Server Error from GET"
         }
+
+        //FACEBOOK EVENTS
+
+        "given a facebook json body with items should compute each one" {
+            mockServer.enqueue(createMockedResponse(200, facebookBody()))
+
+            val result = socialNetworkHandler.findFacebookEvents(baseUrl).collectList().block()
+
+            result?.shouldHaveSize(2)
+        }
+
+        "given a facebook json item with name should compute the value" {
+            mockServer.enqueue(createMockedResponse(200, facebookBody()))
+
+            val result = socialNetworkHandler.findFacebookEvents(baseUrl).collectList().block()
+
+            result?.firstOrNull()?.name shouldNotBe null
+        }
+
+        "given a facebook json item with status should compute the value" {
+            mockServer.enqueue(createMockedResponse(200, facebookBody()))
+
+            val result = socialNetworkHandler.findFacebookEvents(baseUrl).collectList().block()
+
+            result?.firstOrNull()?.status shouldNotBe null
+        }
+
+        "it should return error with invalid json" {
+            val body = "I am trapped in a social media factory send help"
+            mockServer.enqueue(createMockedResponse(500,body))
+
+            val thrown: Exception = shouldThrow {
+                socialNetworkHandler.findFacebookEvents(baseUrl).collectList().block()
+            }
+
+            thrown.message shouldContain  "500 Internal Server Error from GET"
+        }
     }
 
     private fun twitterBody(): String {
@@ -90,6 +130,19 @@ class SocialNetworkHandlerTest : StringSpec() {
                       }
                     ]
                 """.trimIndent()
+    }
+
+    private fun facebookBody(): String {
+        return """
+              {
+                "name": "Some Friend",
+                "status": "Here's some photos of my holiday. Look how much more fun I'm having than you are!"
+              },
+              {
+                "name": "Drama Pig",
+                "status": "I am in a hospital. I will not tell you anything about why I am here."
+              }
+            ]""".trimIndent()
     }
 
     private fun createMockedResponse(status: Int, body: String): MockResponse {
