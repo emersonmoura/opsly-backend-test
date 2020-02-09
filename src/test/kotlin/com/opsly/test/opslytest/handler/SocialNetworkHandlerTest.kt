@@ -123,7 +123,7 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             val result = socialNetworkHandler.findInstagramEvents(baseUrl).collectList().block()
 
-            result?.shouldHaveSize(4)
+            result?.shouldHaveSize(5)
         }
 
         "given a instagram json item with username should compute the value" {
@@ -158,12 +158,12 @@ class SocialNetworkHandlerTest : StringSpec() {
         return """
             [
               {
-                "name": "Some Friend",
-                "status": "Here's some photos of my holiday. Look how much more fun I'm having than you are!"
+                "username": "@GuyEndoreKaiser",
+                "tweet": "If you live to be 100, you should make up some fake reason why, just to mess with people... like claim you ate a pinecone every single day."
               },
               {
-                "name": "Drama Pig",
-                "status": "I am in a hospital. I will not tell you anything about why I am here."
+                "username": "@mikeleffingwell",
+                "tweet": "STOP TELLING ME YOUR NEWBORN'S WEIGHT AND LENGTH I DON'T KNOW WHAT TO DO WITH THAT INFORMATION."
               }
             ]""".trimIndent()
     }
