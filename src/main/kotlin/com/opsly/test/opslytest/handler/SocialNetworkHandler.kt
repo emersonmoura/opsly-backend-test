@@ -14,7 +14,9 @@ class SocialNetworkHandler(@Autowired var socialEventHandlers: MutableList<Socia
                 .map { it.findEvents<SocialEvent>() }
                 .flatMap { it.collectList() }
                 .map {
-                    it.filter { it.hasInformation() }.groupBy({ it.networkName() },{ it.information() })
+                    it.filter { it.hasInformation() }
+                }.map {
+                    it.groupBy({ it.networkName() },{ it.information() })
                 }.reduce(emptyMap()) {
                     result, current -> result.plus(current)
                 }
