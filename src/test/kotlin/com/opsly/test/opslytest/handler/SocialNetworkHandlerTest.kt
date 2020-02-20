@@ -28,7 +28,7 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             val result = socialNetworkHandler.findEvents().block()
 
-            result?.twitter?.shouldHaveSize(1)
+            result?.get("twitter")?.shouldHaveSize(1)
         }
 
         "given a twitter body with items should map its value" {
@@ -36,7 +36,7 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             val result = socialNetworkHandler.findEvents().block()
 
-            result?.twitter?.firstOrNull() shouldBe  "tweet"
+            result?.get("twitter")?.firstOrNull() shouldBe  "tweet"
         }
 
         "given a facebook body with items should compute each one" {
@@ -44,7 +44,7 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             val result = socialNetworkHandler.findEvents().block()
 
-            result?.facebook?.shouldHaveSize(1)
+            result?.get("facebook")?.shouldHaveSize(1)
         }
 
         "given a facebook body with items should map its value" {
@@ -52,7 +52,7 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             val result = socialNetworkHandler.findEvents().block()
 
-            result?.facebook?.firstOrNull() shouldBe "status"
+            result?.get("facebook")?.firstOrNull() shouldBe "status"
         }
 
         "given a instagram body with items should compute each one" {
@@ -60,7 +60,7 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             val result = socialNetworkHandler.findEvents().block()
 
-            result?.instagram?.shouldHaveSize(1)
+            result?.get("instagram")?.shouldHaveSize(1)
         }
 
         "given a instagram body with items should map its value" {
@@ -68,7 +68,7 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             val result = socialNetworkHandler.findEvents().block()
 
-            result?.instagram?.firstOrNull() shouldBe "picture"
+            result?.get("instagram")?.firstOrNull() shouldBe "picture"
         }
 
         "empty results should not be considered" {
@@ -76,11 +76,12 @@ class SocialNetworkHandlerTest : StringSpec() {
 
             val result = socialNetworkHandler.findEvents().block()
 
-            result?.facebook?.shouldHaveSize(0)
+            result?.get("facebook")?.shouldHaveSize(0)
         }
     }
 
     private fun configureMocks(facebookEvents: Flux<FacebookEvent>, instagramEvents: Flux<InstagramEvent>, twitterEvents: Flux<TwitterEvent>) {
+        socialNetworkHandler.socialEventHandlers.clear()
         configureFacebookMock(facebookEvents)
         configureInstagramMock(instagramEvents)
         configureTwitterMock(twitterEvents)
@@ -88,23 +89,23 @@ class SocialNetworkHandlerTest : StringSpec() {
 
     private fun configureTwitterMock(twitterEvents: Flux<TwitterEvent>) {
         val twitterEventHandler = mock<TwitterEventHandler> {
-            on { findTwitterEvents() } doReturn twitterEvents
+            on { findEvents<TwitterEvent>() } doReturn twitterEvents
         }
-        socialNetworkHandler.twitterEventHandler = twitterEventHandler
+        socialNetworkHandler.socialEventHandlers.add(twitterEventHandler)
     }
 
     private fun configureInstagramMock(instagramEvents: Flux<InstagramEvent>) {
         val instagramEventHandler = mock<InstagramEventHandler> {
-            on { findInstagramEvents() } doReturn instagramEvents
+            on { findEvents<InstagramEvent>() } doReturn instagramEvents
         }
-        socialNetworkHandler.instagramEventHandler = instagramEventHandler
+        socialNetworkHandler.socialEventHandlers.add(instagramEventHandler)
     }
 
     private fun configureFacebookMock(facebookEvents: Flux<FacebookEvent>) {
         val facebookEventHandler = mock<FacebookEventHandler> {
-            on { findFacebookEvents() } doReturn facebookEvents
+           on { findEvents<FacebookEvent>() } doReturn facebookEvents
         }
-        socialNetworkHandler.facebookEventHandler = facebookEventHandler
+        socialNetworkHandler.socialEventHandlers.add(facebookEventHandler)
     }
 
 }
