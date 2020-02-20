@@ -1,6 +1,8 @@
 package com.opsly.test.opslytest.handler
 
 import com.opsly.test.opslytest.ResponseMocker.createMockedResponse
+import com.opsly.test.opslytest.model.FacebookEvent
+import com.opsly.test.opslytest.model.SocialEvent
 import io.kotlintest.Spec
 import io.kotlintest.TestCase
 import io.kotlintest.matchers.collections.shouldHaveSize
@@ -13,7 +15,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class FacebookEventHandlerTest : StringSpec() {
 
     companion object {
@@ -21,10 +22,9 @@ class FacebookEventHandlerTest : StringSpec() {
     }
     override fun listeners() = listOf(SpringListener)
 
-    @Autowired
-    lateinit var facebookEventHandler: FacebookEventHandler
+    private val facebookEventHandler: FacebookEventHandler = FacebookEventHandler("")
 
-    val mockServer = MockWebServer()
+    private val mockServer = MockWebServer()
 
     override fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
@@ -46,7 +46,7 @@ class FacebookEventHandlerTest : StringSpec() {
         "given a facebook json body with items should compute each one" {
             mockServer.enqueue(createMockedResponse(200, facebookBody()))
 
-            val result = facebookEventHandler.findFacebookEvents().collectList().block()
+            val result = facebookEventHandler.findEvents<SocialEvent>().collectList().block()
 
             result?.shouldHaveSize(2)
         }
@@ -54,7 +54,7 @@ class FacebookEventHandlerTest : StringSpec() {
         "given a facebook json item with name should compute the value" {
             mockServer.enqueue(createMockedResponse(200, facebookBody()))
 
-            val result = facebookEventHandler.findFacebookEvents().collectList().block()
+            val result = facebookEventHandler.findEvents<FacebookEvent>().collectList().block()
 
             result?.firstOrNull()?.name shouldNotBe null
         }
@@ -62,7 +62,7 @@ class FacebookEventHandlerTest : StringSpec() {
         "given a facebook json item with status should compute the value" {
             mockServer.enqueue(createMockedResponse(200, facebookBody()))
 
-            val result = facebookEventHandler.findFacebookEvents().collectList().block()
+            val result = facebookEventHandler.findEvents<FacebookEvent>().collectList().block()
 
             result?.firstOrNull()?.status shouldNotBe null
         }
@@ -71,7 +71,7 @@ class FacebookEventHandlerTest : StringSpec() {
             val body = "I am trapped in a social media factory send help"
             mockServer.enqueue(createMockedResponse(500,body))
 
-            val result = facebookEventHandler.findFacebookEvents().collectList().block()
+            val result = facebookEventHandler.findEvents<SocialEvent>().collectList().block()
 
             result?.shouldHaveSize(1)
         }

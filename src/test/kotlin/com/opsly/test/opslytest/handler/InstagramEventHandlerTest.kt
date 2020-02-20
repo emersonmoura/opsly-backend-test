@@ -1,6 +1,7 @@
 package com.opsly.test.opslytest.handler
 
 import com.opsly.test.opslytest.ResponseMocker.createMockedResponse
+import com.opsly.test.opslytest.model.InstagramEvent
 import io.kotlintest.Spec
 import io.kotlintest.TestCase
 import io.kotlintest.matchers.collections.shouldHaveSize
@@ -13,7 +14,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class InstagramEventHandlerTest  : StringSpec() {
 
     companion object {
@@ -21,10 +21,9 @@ class InstagramEventHandlerTest  : StringSpec() {
     }
     override fun listeners() = listOf(SpringListener)
 
-    @Autowired
-    lateinit var instagramEventHandler: InstagramEventHandler
+    private val instagramEventHandler: InstagramEventHandler =  InstagramEventHandler("")
 
-    val mockServer = MockWebServer()
+    private val mockServer = MockWebServer()
 
     override fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
@@ -47,7 +46,7 @@ class InstagramEventHandlerTest  : StringSpec() {
         "given a instagram json body with items should compute each one" {
             mockServer.enqueue(createMockedResponse(200, instagramBody()))
 
-            val result = instagramEventHandler.findInstagramEvents().collectList().block()
+            val result = instagramEventHandler.findEvents<InstagramEvent>().collectList().block()
 
             result?.shouldHaveSize(5)
         }
@@ -55,7 +54,7 @@ class InstagramEventHandlerTest  : StringSpec() {
         "given a instagram json item with username should compute the value" {
             mockServer.enqueue(createMockedResponse(200, instagramBody()))
 
-            val result = instagramEventHandler.findInstagramEvents().collectList().block()
+            val result = instagramEventHandler.findEvents<InstagramEvent>().collectList().block()
 
             result?.firstOrNull()?.username shouldNotBe null
         }
@@ -63,7 +62,7 @@ class InstagramEventHandlerTest  : StringSpec() {
         "given a instagram json item with picture should compute the value" {
             mockServer.enqueue(createMockedResponse(200, instagramBody()))
 
-            val result = instagramEventHandler.findInstagramEvents().collectList().block()
+            val result = instagramEventHandler.findEvents<InstagramEvent>().collectList().block()
 
             result?.firstOrNull()?.picture shouldNotBe null
         }
@@ -72,7 +71,7 @@ class InstagramEventHandlerTest  : StringSpec() {
             val body = "I am trapped in a social media factory send help"
             mockServer.enqueue(createMockedResponse(500,body))
 
-            val result = instagramEventHandler.findInstagramEvents().collectList().block()
+            val result = instagramEventHandler.findEvents<InstagramEvent>().collectList().block()
 
             result?.shouldHaveSize(1)
         }

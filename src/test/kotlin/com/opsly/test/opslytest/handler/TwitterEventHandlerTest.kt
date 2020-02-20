@@ -1,6 +1,7 @@
 package com.opsly.test.opslytest.handler
 
 import com.opsly.test.opslytest.ResponseMocker.createMockedResponse
+import com.opsly.test.opslytest.model.TwitterEvent
 import io.kotlintest.Spec
 import io.kotlintest.TestCase
 import io.kotlintest.matchers.collections.shouldHaveSize
@@ -11,7 +12,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class TwitterEventHandlerTest : StringSpec() {
 
     companion object {
@@ -19,10 +19,9 @@ class TwitterEventHandlerTest : StringSpec() {
     }
     override fun listeners() = listOf(SpringListener)
 
-    @Autowired
-    lateinit var twitterEventHandler: TwitterEventHandler
+    private var twitterEventHandler: TwitterEventHandler = TwitterEventHandler("")
 
-    val mockServer = MockWebServer()
+    private val mockServer = MockWebServer()
 
     override fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
@@ -44,7 +43,7 @@ class TwitterEventHandlerTest : StringSpec() {
         "given a twitter json body with items should compute each one" {
             mockServer.enqueue(createMockedResponse(200, twitterBody()))
 
-            val result = twitterEventHandler.findTwitterEvents().collectList().block()
+            val result = twitterEventHandler.findEvents<TwitterEvent>().collectList().block()
 
             result?.shouldHaveSize(2)
         }
@@ -52,7 +51,7 @@ class TwitterEventHandlerTest : StringSpec() {
         "given a twitter json item with username should compute the value" {
             mockServer.enqueue(createMockedResponse(200, twitterBody()))
 
-            val result = twitterEventHandler.findTwitterEvents().collectList().block()
+            val result = twitterEventHandler.findEvents<TwitterEvent>().collectList().block()
 
             result?.firstOrNull()?.username shouldNotBe null
         }
@@ -60,7 +59,7 @@ class TwitterEventHandlerTest : StringSpec() {
         "given a twitter json item with tweet should compute the value" {
             mockServer.enqueue(createMockedResponse(200, twitterBody()))
 
-            val result = twitterEventHandler.findTwitterEvents().collectList().block()
+            val result = twitterEventHandler.findEvents<TwitterEvent>().collectList().block()
 
             result?.firstOrNull()?.tweet shouldNotBe null
         }
@@ -69,7 +68,7 @@ class TwitterEventHandlerTest : StringSpec() {
             val body = "I am trapped in a social media factory send help"
             mockServer.enqueue(createMockedResponse(500,body))
 
-            val result = twitterEventHandler.findTwitterEvents().collectList().block()
+            val result = twitterEventHandler.findEvents<TwitterEvent>().collectList().block()
 
             result?.shouldHaveSize(1)
         }
