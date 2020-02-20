@@ -12,7 +12,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class TwitterEventHandlerTest : StringSpec() {
 
     companion object {
@@ -20,10 +19,9 @@ class TwitterEventHandlerTest : StringSpec() {
     }
     override fun listeners() = listOf(SpringListener)
 
-    @Autowired
-    lateinit var twitterEventHandler: TwitterEventHandler
+    private var twitterEventHandler: TwitterEventHandler = TwitterEventHandler("")
 
-    val mockServer = MockWebServer()
+    private val mockServer = MockWebServer()
 
     override fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)

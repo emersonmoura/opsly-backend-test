@@ -14,7 +14,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class InstagramEventHandlerTest  : StringSpec() {
 
     companion object {
@@ -22,10 +21,9 @@ class InstagramEventHandlerTest  : StringSpec() {
     }
     override fun listeners() = listOf(SpringListener)
 
-    @Autowired
-    lateinit var instagramEventHandler: InstagramEventHandler
+    private val instagramEventHandler: InstagramEventHandler =  InstagramEventHandler("")
 
-    val mockServer = MockWebServer()
+    private val mockServer = MockWebServer()
 
     override fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)

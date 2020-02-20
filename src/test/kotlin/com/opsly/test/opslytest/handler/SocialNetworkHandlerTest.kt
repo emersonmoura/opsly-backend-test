@@ -13,13 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import reactor.core.publisher.Flux
 
-@SpringBootTest
 class SocialNetworkHandlerTest : StringSpec() {
 
     override fun listeners() = listOf(SpringListener)
 
-    @Autowired
-    lateinit var socialNetworkHandler: SocialNetworkHandler
+    private val socialNetworkHandler: SocialNetworkHandler = SocialNetworkHandler(mutableListOf(FacebookEventHandler("")))
 
     init {
 

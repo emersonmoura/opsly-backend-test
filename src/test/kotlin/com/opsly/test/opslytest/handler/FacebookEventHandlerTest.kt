@@ -15,7 +15,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-@SpringBootTest
 class FacebookEventHandlerTest : StringSpec() {
 
     companion object {
@@ -23,10 +22,9 @@ class FacebookEventHandlerTest : StringSpec() {
     }
     override fun listeners() = listOf(SpringListener)
 
-    @Autowired
-    lateinit var facebookEventHandler: FacebookEventHandler
+    private val facebookEventHandler: FacebookEventHandler = FacebookEventHandler("")
 
-    val mockServer = MockWebServer()
+    private val mockServer = MockWebServer()
 
     override fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)

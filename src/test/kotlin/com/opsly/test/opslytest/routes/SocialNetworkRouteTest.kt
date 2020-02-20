@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Mono
 
-@SpringBootTest
 class SocialNetworkRouteTest : StringSpec() {
 
     override fun listeners() = listOf(SpringListener)
@@ -28,7 +27,7 @@ class SocialNetworkRouteTest : StringSpec() {
     }
 
     private fun createMock(events: Mono<Map<String, List<String?>>>): SocialNetworkHandler {
-        return mock<SocialNetworkHandler> {
+        return mock {
             on { findEvents() } doReturn events
         }
     }
